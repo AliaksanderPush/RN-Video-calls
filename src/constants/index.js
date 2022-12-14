@@ -14,6 +14,10 @@ export const errMessage = {
   login: 'Invalid user',
   tryAgain: 'Try again latter',
   wrong: 'Login or password is wrong!',
+  camera: 'MainScreen: handleCall: camera permission is not granted',
+  audio: 'MainScreen: handleCall: record audio permission is not granted',
+  failed: 'MainScreen: handleCall:makeCall failed:',
+  state: 'Invalid state',
 };
 
 // User list

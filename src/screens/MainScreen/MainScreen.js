@@ -12,6 +12,7 @@ import {
 } from 'native-base';
 import {mainImg, users} from '../../constants';
 import {Platform, PermissionsAndroid} from 'react-native';
+import {errMessage} from '../../constants';
 
 export const MainScreen = ({navigation}) => {
   const [service, setService] = React.useState('');
@@ -19,8 +20,7 @@ export const MainScreen = ({navigation}) => {
   const handleCall = async isVideoCall => {
     try {
       if (Platform.OS === 'android') {
-        let permissions =
-          [PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] === 'granted';
+        let permissions = [PermissionsAndroid.PERMISSIONS.RECORD_AUDIO];
         if (isVideoCall) {
           permissions.push(PermissionsAndroid.PERMISSIONS.CAMERA);
         }
@@ -31,15 +31,11 @@ export const MainScreen = ({navigation}) => {
           granted[PermissionsAndroid.PERMISSIONS.CAMERA] === 'granted';
         if (recordAudioGranted) {
           if (isVideoCall && !cameraGranted) {
-            console.warn(
-              'MainScreen: handleCall: camera permission is not granted',
-            );
+            console.warn(errMessage.camera);
             return;
           }
         } else {
-          console.warn(
-            'MainScreen: handleCall: record audio permission is not granted',
-          );
+          console.warn(errMessage.audio);
           return;
         }
       }
@@ -49,7 +45,7 @@ export const MainScreen = ({navigation}) => {
         isIncomingCall: false,
       });
     } catch (e) {
-      console.warn('MainScreen: handleCall:makeCall failed: `${e}`');
+      console.warn(`${errMessage.failed} ${e}`);
     }
   };
 

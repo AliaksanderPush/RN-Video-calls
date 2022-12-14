@@ -41,11 +41,13 @@ export const LoginScreen = ({navigation}) => {
       if (clientState === Voximplant.ClientState.DISCONNECTED) {
         await voximplant.connect();
       }
-      await voximplant.login(
-        `${login}@mycall.sash411.voximplant.com`,
-        password,
-      );
-      setLoading(false);
+      if (clientState === Voximplant.ClientState.CONNECTED) {
+        await voximplant.login(
+          `${login}@mycall.sash411.voximplant.com`,
+          password,
+        );
+        setLoading(false);
+      }
       navigation.navigate('Main');
     } catch (e) {
       setLoading(false);
@@ -70,6 +72,8 @@ export const LoginScreen = ({navigation}) => {
         return errMessage.password;
       case 404:
         return errMessage.login;
+      case 491:
+        return errMessage.state;
       default:
         return errMessage.tryAgain;
     }
@@ -104,7 +108,7 @@ export const LoginScreen = ({navigation}) => {
             alignItems="center"
             justifyContent="center">
             {' '}
-            <Text mt={3} fontSize="lg">
+            <Text mt={Platform.OS === 'android' ? 0 : 3} fontSize="lg">
               Wellcome back you've
             </Text>
             <Text fontSize="lg">Been missed!</Text>
