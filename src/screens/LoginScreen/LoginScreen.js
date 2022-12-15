@@ -4,6 +4,7 @@ import {Platform, SafeAreaView} from 'react-native';
 import {AlertCustom} from '../../components';
 import {Voximplant} from 'react-native-voximplant';
 import {logo, errMessage} from '../../constants';
+import {VOXIMPLANT_APP, VOXIMPLANT_ACCOUNT} from '../../constants';
 import {
   Box,
   Text,
@@ -43,13 +44,13 @@ export const LoginScreen = ({navigation}) => {
     try {
       setLoading(true);
       await voximplant.login(
-        `${login}@mycall.sash411.voximplant.com`,
+        `${login}@${VOXIMPLANT_APP}.${VOXIMPLANT_ACCOUNT}.voximplant.com`,
         password,
       );
-
       setLoading(false);
       navigation.navigate('Main');
     } catch (e) {
+      console.log(e.name + e.message);
       setLoading(false);
       switch (e.name) {
         case Voximplant.ClientEvents.ConnectionFailed:

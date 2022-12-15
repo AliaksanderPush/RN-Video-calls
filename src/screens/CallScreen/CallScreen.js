@@ -11,20 +11,22 @@ export const CallScreen = ({route, navigation}) => {
   const [callState, setCallState] = useState('Connecting');
   const [localVideoStreamId, setLocalVideoStreamId] = useState('');
   const [remoteVideoStreamId, setRemoteVideoStreamId] = useState('');
-
+  console.log('vox=>', Voximplant);
   const safeAreaProps = useSafeArea({
     safeAreaTop: true,
     pt: 2,
   });
 
   const voximplant = Voximplant.getInstance();
+  console.log('instance=>', voximplant);
   const callId = useRef(route?.params.callId);
+  console.log('callId in Ref=>', callId);
   const endCall = useCallback(() => {
     let call = calls.get(callId.current);
     call.hungup();
   }, []);
 
-  function showError(reason) {
+  function showCallError(reason) {
     Alert.alert('Call failed', `Reason: ${reason}`, [
       {
         text: 'Ok',
@@ -63,15 +65,14 @@ export const CallScreen = ({route, navigation}) => {
 
     function subscribeToCallEvents() {
       call.on(Voximplant.CallEvents.Connected, callEvent => {
-        setCallState('Call Connected');
+        setCallState('Call connected');
       });
       call.on(Voximplant.CallEvents.Disconnected, callEvent => {
         calls.delete(callEvent.call.callId);
         navigation.navigate('Main');
       });
       call.on(Voximplant.CallEvents.Failed, callEvent => {
-        console.log('popali v event=>', callEvent);
-        showError(callEvent.reason);
+        showCallError(callEvent.reason);
       });
       call.on(Voximplant.CallEvents.ProgressToneStart, callEvent => {
         setCallState('Ringing...');
@@ -80,6 +81,7 @@ export const CallScreen = ({route, navigation}) => {
         setLocalVideoStreamId(callEvent.videoStream.id);
       });
       call.on(Voximplant.CallEvents.EndpointAdded, callEvent => {
+        console.log('endpoint added');
         endpoint = callEvent.endpoint;
         subscribeToEndpointEvents();
       });
@@ -97,6 +99,7 @@ export const CallScreen = ({route, navigation}) => {
     if (isIncomingCall) {
       answerCall();
     } else {
+      console.log('v make');
       makeCall();
     }
 
@@ -108,24 +111,30 @@ export const CallScreen = ({route, navigation}) => {
       call.off(Voximplant.CallEvents.LocalVideoStreamAdded);
       call.off(Voximplant.CallEvents.EndpointAdded);
     };
-  }, [isVideoCall]);
+  }, []);
 
   return (
     <Box flex={1} {...safeAreaProps}>
       <Box h="80%" position="relative" w="100%">
         <GoBack />
-        <View w="100%" h="100%" bg="amber.100">
+        <View w="100%" h="100%" position="relative" bg="amber.100">
           <Voximplant.VideoView
             videoStreamId={remoteVideoStreamId}
             scaleType={Voximplant.RenderScaleType.SCALE_FIT}
-            style={{width: '100%', height: '50%'}}
+            style={{width: '100%', height: '100%'}}
           />
 
           <Voximplant.VideoView
             videoStreamId={localVideoStreamId}
             showOnTop={true}
             scaleType={Voximplant.RenderScaleType.SCALE_FIT}
-            style={{width: '100%', height: '50%'}}
+            style={{
+              position: 'absolute',
+              right: 20,
+              bottom: 20,
+              width: 100,
+              height: 120,
+            }}
           />
         </View>
       </Box>

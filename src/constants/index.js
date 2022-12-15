@@ -23,3 +23,6 @@ export const errMessage = {
 // User list
 
 export const users = ['user1', 'user2'];
+
+export const VOXIMPLANT_APP = 'mycall';
+export const VOXIMPLANT_ACCOUNT = 'sash411.n6';
