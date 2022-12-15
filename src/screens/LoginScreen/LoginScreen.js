@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {Platform} from 'react-native';
+import {Platform, SafeAreaView} from 'react-native';
 import {AlertCustom} from '../../components';
 import {Voximplant} from 'react-native-voximplant';
 import {logo, errMessage} from '../../constants';
@@ -16,7 +16,7 @@ import {
   KeyboardAvoidingView,
   Button,
   Image,
-  View,
+  useSafeArea,
 } from 'native-base';
 
 export const LoginScreen = ({navigation}) => {
@@ -26,6 +26,11 @@ export const LoginScreen = ({navigation}) => {
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  const safeAreaProps = useSafeArea({
+    safeAreaTop: true,
+    pt: 2,
+  });
 
   const voximplant = Voximplant.getInstance();
 
@@ -37,17 +42,12 @@ export const LoginScreen = ({navigation}) => {
     }
     try {
       setLoading(true);
-      let clientState = await voximplant.getClientState();
-      if (clientState === Voximplant.ClientState.DISCONNECTED) {
-        await voximplant.connect();
-      }
-      if (clientState === Voximplant.ClientState.CONNECTED) {
-        await voximplant.login(
-          `${login}@mycall.sash411.voximplant.com`,
-          password,
-        );
-        setLoading(false);
-      }
+      await voximplant.login(
+        `${login}@mycall.sash411.voximplant.com`,
+        password,
+      );
+
+      setLoading(false);
       navigation.navigate('Main');
     } catch (e) {
       setLoading(false);
@@ -79,8 +79,21 @@ export const LoginScreen = ({navigation}) => {
     }
   }
 
+  useEffect(() => {
+    const connectToVoximplant = async () => {
+      let clientState = await voximplant.getClientState();
+      if (clientState === Voximplant.ClientState.DISCONNECTED) {
+        await voximplant.connect();
+      } else if (clientState === Voximplant.ClientState.LOGGED_IN) {
+        navigation.navigate('Main');
+      }
+    };
+    connectToVoximplant();
+  }, []);
+
   return (
     <KeyboardAvoidingView
+      {...safeAreaProps}
       h={{
         base: 'auto',
       }}

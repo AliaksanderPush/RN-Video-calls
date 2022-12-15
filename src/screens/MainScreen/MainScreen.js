@@ -1,27 +1,36 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Center,
-  VStack,
-  Text,
   Box,
   Heading,
   Image,
   Select,
   CheckIcon,
   Button,
+  useSafeArea,
 } from 'native-base';
 import {mainImg, users} from '../../constants';
 import {Platform, PermissionsAndroid} from 'react-native';
+import {GoBack} from '../../components';
+import {Voximplant} from 'react-native-voximplant';
 import {errMessage} from '../../constants';
+import calls from '../../store';
 
 export const MainScreen = ({navigation}) => {
-  const [service, setService] = React.useState('');
+  const [service, setService] = useState('');
 
-  const handleCall = async isVideoCall => {
+  const voximplant = Voximplant.getInstance();
+
+  const safeAreaProps = useSafeArea({
+    safeAreaTop: true,
+    pt: 2,
+  });
+
+  const handleCall = async isVideoCalling => {
     try {
       if (Platform.OS === 'android') {
         let permissions = [PermissionsAndroid.PERMISSIONS.RECORD_AUDIO];
-        if (isVideoCall) {
+        if (isVideoCalling) {
           permissions.push(PermissionsAndroid.PERMISSIONS.CAMERA);
         }
         const granted = await PermissionsAndroid.requestMultiple(permissions);
@@ -30,7 +39,7 @@ export const MainScreen = ({navigation}) => {
         const cameraGranted =
           granted[PermissionsAndroid.PERMISSIONS.CAMERA] === 'granted';
         if (recordAudioGranted) {
-          if (isVideoCall && !cameraGranted) {
+          if (isVideoCalling && !cameraGranted) {
             console.warn(errMessage.camera);
             return;
           }
@@ -40,7 +49,7 @@ export const MainScreen = ({navigation}) => {
         }
       }
       navigation.navigate('Call', {
-        isVideoCall,
+        isVideoCall: isVideoCalling,
         callee: service,
         isIncomingCall: false,
       });
@@ -49,10 +58,26 @@ export const MainScreen = ({navigation}) => {
     }
   };
 
-  console.log('user=>', users);
+  useEffect(() => {
+    voximplant.on(Voximplant.ClientEvents.IncomingCall, incomingCallEvent => {
+      calls.set(incomingCallEvent.call.callId, incomingCallEvent.call);
+      navigation.navigate('IncomingCall', {
+        callId: incomingCallEvent.call.callId,
+      });
+    });
+    return function cleanUp() {
+      voximplant.off(Voximplant.ClientEvents.IncomingCall);
+    };
+  }, []);
+
   return (
-    <Box flex={1}>
-      <Center flex={1 / 2} py={2} justifyContent="space-between">
+    <Box flex={1} {...safeAreaProps}>
+      <Center
+        flex={1 / 2}
+        position="relative"
+        py={2}
+        justifyContent="space-between">
+        <GoBack navigation={navigation} />
         <Image
           w="70%"
           h="280"
@@ -90,7 +115,7 @@ export const MainScreen = ({navigation}) => {
           mt={10}
           w="90%"
           colorScheme="secondary"
-          onPress={() => handleCall(false)}
+          onPress={() => handleCall(true)}
           //isLoading={loading}
           // isLoadingText="Submitting">
         >
