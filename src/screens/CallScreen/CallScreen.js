@@ -1,29 +1,24 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Alert} from 'react-native';
+import {Alert, ImageBackground} from 'react-native';
 import {Center, Box, Text, useSafeArea, Pressable, View} from 'native-base';
 import {Voximplant} from 'react-native-voximplant';
 import {GoBack} from '../../components';
+import {imageCall} from '../../constants';
 import Entypo from 'react-native-vector-icons/Entypo';
 import calls from '../../store';
 
 export const CallScreen = ({route, navigation}) => {
-  const {isVideoCall, callee, isIncomingCall} = route?.params;
-  const [callState, setCallState] = useState('Connecting');
+  //const {isVideoCall, callee, isIncomingCall} = route?.params;
+  const [callState, setCallState] = useState('Connecting...');
   const [localVideoStreamId, setLocalVideoStreamId] = useState('');
   const [remoteVideoStreamId, setRemoteVideoStreamId] = useState('');
-  console.log('vox=>', Voximplant);
-  const safeAreaProps = useSafeArea({
-    safeAreaTop: true,
-    pt: 2,
-  });
-
+  /*
   const voximplant = Voximplant.getInstance();
-  console.log('instance=>', voximplant);
   const callId = useRef(route?.params.callId);
-  console.log('callId in Ref=>', callId);
+
   const endCall = useCallback(() => {
     let call = calls.get(callId.current);
-    call.hungup();
+    call.hangup();
   }, []);
 
   function showCallError(reason) {
@@ -39,21 +34,26 @@ export const CallScreen = ({route, navigation}) => {
   }
 
   useEffect(() => {
+    let call;
+    let endpoint;
     let callSetting = {
       video: {
         sendVideo: isVideoCall,
         receiveVideo: isVideoCall,
       },
     };
-    let call;
-    let endpoint;
+
+    if (isIncomingCall) {
+      answerCall();
+    } else {
+      makeCall();
+    }
+
     async function makeCall() {
       call = await voximplant.call(callee, callSetting);
       callId.current = call.callId;
       calls.set(call.callId, call);
       subscribeToCallEvents();
-      console.log('make =>', call.callId);
-      console.log('make callId=>', calls.get(callId.current));
     }
     async function answerCall() {
       call = calls.get(callId.current);
@@ -81,7 +81,6 @@ export const CallScreen = ({route, navigation}) => {
         setLocalVideoStreamId(callEvent.videoStream.id);
       });
       call.on(Voximplant.CallEvents.EndpointAdded, callEvent => {
-        console.log('endpoint added');
         endpoint = callEvent.endpoint;
         subscribeToEndpointEvents();
       });
@@ -96,14 +95,7 @@ export const CallScreen = ({route, navigation}) => {
       );
     }
 
-    if (isIncomingCall) {
-      answerCall();
-    } else {
-      console.log('v make');
-      makeCall();
-    }
-
-    return function cleanUp() {
+    return () => {
       call.off(Voximplant.CallEvents.Connected);
       call.off(Voximplant.CallEvents.Disconnected);
       call.off(Voximplant.CallEvents.Failed);
@@ -112,15 +104,25 @@ export const CallScreen = ({route, navigation}) => {
       call.off(Voximplant.CallEvents.EndpointAdded);
     };
   }, []);
+*/
+  const safeAreaProps = useSafeArea({
+    safeAreaTop: true,
+    pt: 2,
+  });
 
   return (
     <Box flex={1} {...safeAreaProps}>
-      <Box h="80%" position="relative" w="100%">
+      <Box h="80%" position="relative" px={5} w="100%">
         <GoBack />
-        <View w="100%" h="100%" position="relative" bg="amber.100">
+        <ImageBackground
+          source={{
+            uri: imageCall,
+          }}
+          w="100%"
+          h="100%"
+          position="relative">
           <Voximplant.VideoView
             videoStreamId={remoteVideoStreamId}
-            scaleType={Voximplant.RenderScaleType.SCALE_FIT}
             style={{width: '100%', height: '100%'}}
           />
 
@@ -136,7 +138,7 @@ export const CallScreen = ({route, navigation}) => {
               height: 120,
             }}
           />
-        </View>
+        </ImageBackground>
       </Box>
       <Center>
         <Text py={3}>{callState}</Text>

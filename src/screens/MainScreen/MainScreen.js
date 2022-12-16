@@ -8,45 +8,34 @@ import {
   CheckIcon,
   Button,
   useSafeArea,
+  HStack,
+  VStack,
 } from 'native-base';
 import {mainImg, users} from '../../constants';
-import {Platform, PermissionsAndroid} from 'react-native';
-import {GoBack} from '../../components';
+import {Alert} from 'react-native';
+import {GoBack, ButtonCall} from '../../components';
 import {Voximplant} from 'react-native-voximplant';
 import {errMessage} from '../../constants';
+import {checkPermissions} from '../../helper';
 import calls from '../../store';
 
 export const MainScreen = ({navigation}) => {
   const [service, setService] = useState('');
+  const [sound, setSound] = useState(false);
+  const [video, setVideo] = useState(true);
+  const [microPhone, setMicrophone] = useState(true);
 
   const voximplant = Voximplant.getInstance();
 
-  const safeAreaProps = useSafeArea({
-    safeAreaTop: true,
-    pt: 2,
-  });
+  const handlemakeCall = () => {
+    handleCall(video);
+  };
 
   const handleCall = async isVideoCalling => {
     try {
-      if (Platform.OS === 'android') {
-        let permissions = [PermissionsAndroid.PERMISSIONS.RECORD_AUDIO];
-        if (isVideoCalling) {
-          permissions.push(PermissionsAndroid.PERMISSIONS.CAMERA);
-        }
-        const granted = await PermissionsAndroid.requestMultiple(permissions);
-        const recordAudioGranted =
-          granted[PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] === 'granted';
-        const cameraGranted =
-          granted[PermissionsAndroid.PERMISSIONS.CAMERA] === 'granted';
-        if (recordAudioGranted) {
-          if (isVideoCalling && !cameraGranted) {
-            console.warn(errMessage.camera);
-            return;
-          }
-        } else {
-          console.warn(errMessage.audio);
-          return;
-        }
+      const responce = await checkPermissions(isVideoCalling);
+      if (!responce) {
+        return;
       }
       navigation.navigate('Call', {
         isVideoCall: isVideoCalling,
@@ -54,8 +43,18 @@ export const MainScreen = ({navigation}) => {
         isIncomingCall: false,
       });
     } catch (e) {
-      console.warn(`${errMessage.failed} ${e}`);
+      Alert.alert(`${errMessage.failed} ${e}`);
     }
+  };
+
+  const handleSound = () => {
+    setSound(!sound);
+  };
+  const handleVideo = () => {
+    setVideo(!video);
+  };
+  const handleMicrophone = () => {
+    setMicrophone(!microPhone);
   };
 
   useEffect(() => {
@@ -65,10 +64,15 @@ export const MainScreen = ({navigation}) => {
         callId: incomingCallEvent.call.callId,
       });
     });
-    return function cleanUp() {
+    return () => {
       voximplant.off(Voximplant.ClientEvents.IncomingCall);
     };
   }, []);
+
+  const safeAreaProps = useSafeArea({
+    safeAreaTop: true,
+    pt: 2,
+  });
 
   return (
     <Box flex={1} {...safeAreaProps}>
@@ -111,16 +115,48 @@ export const MainScreen = ({navigation}) => {
             })}
           </Select>
         </Box>
-        <Button
-          mt={10}
-          w="90%"
-          colorScheme="secondary"
-          onPress={() => handleCall(true)}
-          //isLoading={loading}
-          // isLoadingText="Submitting">
-        >
-          CALL
-        </Button>
+        <VStack
+          w="80%"
+          h="70%"
+          mt={3}
+          justifyContent="space-evenly"
+          alignItems="center">
+          <ButtonCall
+            typeName="FontAwesome5"
+            iconName="phone"
+            bg="green.500"
+            color="white"
+            size={100}
+            disable={!service ? true : false}
+            onHandler={handlemakeCall}
+          />
+          <HStack w="100%" justifyContent="space-evenly">
+            <ButtonCall
+              typeName="FontAwesome"
+              iconName={!sound ? 'volume-off' : 'volume-up'}
+              bg={!sound ? 'gray.300' : 'gray.500'}
+              color={'white'}
+              size={70}
+              onHandler={handleSound}
+            />
+            <ButtonCall
+              typeName="FontAwesome5"
+              iconName={video ? 'video' : 'video-slash'}
+              bg={video ? 'gray.500' : 'gray.300'}
+              color={'white'}
+              size={70}
+              onHandler={handleVideo}
+            />
+            <ButtonCall
+              typeName="FontAwesome"
+              iconName={microPhone ? 'microphone' : 'microphone-slash'}
+              bg={microPhone ? 'gray.500' : 'gray.300'}
+              color={'white'}
+              size={70}
+              onHandler={handleMicrophone}
+            />
+          </HStack>
+        </VStack>
       </Center>
     </Box>
   );

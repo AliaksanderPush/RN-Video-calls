@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {Platform, SafeAreaView} from 'react-native';
+import {Platform} from 'react-native';
 import {AlertCustom} from '../../components';
 import {Voximplant} from 'react-native-voximplant';
 import {logo, errMessage} from '../../constants';
@@ -28,11 +28,6 @@ export const LoginScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const safeAreaProps = useSafeArea({
-    safeAreaTop: true,
-    pt: 2,
-  });
-
   const voximplant = Voximplant.getInstance();
 
   const loginConnect = async () => {
@@ -50,22 +45,24 @@ export const LoginScreen = ({navigation}) => {
       setLoading(false);
       navigation.navigate('Main');
     } catch (e) {
-      console.log(e.name + e.message);
       setLoading(false);
-      switch (e.name) {
-        case Voximplant.ClientEvents.ConnectionFailed:
-          setMessage(errMessage.connect);
-          break;
-        case voximplant.ClientEvents.AuthResult:
-          const mess = convertCodeMessage(e.code);
-          setMessage(mess);
-          break;
-        default:
-          1;
-          setMessage(errMessage.unknown);
-      }
+      showErrMessage(e.name);
     }
   };
+
+  function showErrMessage(err) {
+    switch (err) {
+      case Voximplant.ClientEvents.ConnectionFailed:
+        setMessage(errMessage.connect);
+        break;
+      case voximplant.ClientEvents.AuthResult:
+        const mess = convertCodeMessage(e.code);
+        setMessage(mess);
+        break;
+      default:
+        setMessage(errMessage.unknown);
+    }
+  }
 
   function convertCodeMessage(code) {
     switch (code) {
@@ -91,6 +88,11 @@ export const LoginScreen = ({navigation}) => {
     };
     connectToVoximplant();
   }, []);
+
+  const safeAreaProps = useSafeArea({
+    safeAreaTop: true,
+    pt: 2,
+  });
 
   return (
     <KeyboardAvoidingView
