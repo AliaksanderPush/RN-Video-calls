@@ -4,6 +4,7 @@ import {Platform} from 'react-native';
 import {AlertCustom} from '../../components';
 import {Voximplant} from 'react-native-voximplant';
 import {logo, errMessage} from '../../constants';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {VOXIMPLANT_APP, VOXIMPLANT_ACCOUNT} from '../../constants';
 import {
   Box,
@@ -95,113 +96,108 @@ export const LoginScreen = ({navigation}) => {
   });
 
   return (
-    <KeyboardAvoidingView
-      {...safeAreaProps}
-      h={{
-        base: 'auto',
-      }}
-      flex={1}
-      bg="gray.200"
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Center flex={0.55} justifyContent="flex-start">
-        <Image
-          borderBottomRightRadius="lg"
-          borderBottomLeftRadius="lg"
-          w="100%"
-          h="280"
-          source={{
-            uri: `${logo}`,
-          }}
-          alt={'Alternate Text '}
-          resizeMode="cover"
-        />
-        <Heading mt={3} size="lg">
-          Hello Again!
-        </Heading>
-        {!message ? (
-          <Box
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center">
-            {' '}
-            <Text mt={Platform.OS === 'android' ? 0 : 3} fontSize="lg">
-              Wellcome back you've
-            </Text>
-            <Text fontSize="lg">Been missed!</Text>
-          </Box>
-        ) : (
-          <Box>
-            <AlertCustom
-              show={!!message ? true : false}
-              setShow={setMessage}
-              title={message}
-            />
-          </Box>
-        )}
-      </Center>
-      <Center flex={0.25}>
-        <Stack space={4} w="100%" alignItems="center">
-          <Input
-            w={{
-              base: '90%',
-              md: '25%',
+    <KeyboardAwareScrollView>
+      <Box {...safeAreaProps} borderWidth={1} flex={1} bg="gray.200">
+        <Center flex={0.55} borderWidth={1}>
+          <Image
+            borderBottomRightRadius="lg"
+            borderBottomLeftRadius="lg"
+            w="100%"
+            h="280"
+            source={{
+              uri: `${logo}`,
             }}
-            h="35%"
-            borderRadius="lg"
-            borderColor={err ? 'red.400' : null}
-            bg="white"
-            value={login}
-            onChangeText={text => setLogin(text)}
-            InputLeftElement={
-              <Icon
-                as={<MaterialIcons name="person" />}
-                size={5}
-                ml="2"
-                color="muted.400"
-              />
-            }
-            placeholder="Login"
+            alt={'Alternate Text '}
+            resizeMode="cover"
           />
-          <Input
-            w={{
-              base: '90%',
-              md: '25%',
-            }}
-            h="35%"
-            bg="white"
-            borderRadius="lg"
-            borderColor={err ? 'red.400' : null}
-            type={show ? 'text' : 'password'}
-            value={password}
-            onChangeText={text => setPassword(text)}
-            InputRightElement={
-              <Pressable onPress={() => setShow(!show)}>
+          <Heading mt={3} size="lg">
+            Hello Again!
+          </Heading>
+          {!message ? (
+            <Box
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center">
+              {' '}
+              <Text mt={Platform.OS === 'android' ? 0 : 3} fontSize="lg">
+                Wellcome back you've
+              </Text>
+              <Text fontSize="lg">Been missed!</Text>
+            </Box>
+          ) : (
+            <Box>
+              <AlertCustom
+                show={!!message ? true : false}
+                setShow={setMessage}
+                title={message}
+              />
+            </Box>
+          )}
+        </Center>
+        <Center flex={0.25} borderWidth={1}>
+          <Stack space={4} w="100%" alignItems="center">
+            <Input
+              w={{
+                base: '90%',
+                md: '25%',
+              }}
+              h="40px"
+              borderRadius="lg"
+              borderColor={err ? 'red.400' : null}
+              bg="white"
+              value={login}
+              onChangeText={text => setLogin(text)}
+              InputLeftElement={
                 <Icon
-                  as={
-                    <MaterialIcons
-                      name={show ? 'visibility' : 'visibility-off'}
-                    />
-                  }
+                  as={<MaterialIcons name="person" />}
                   size={5}
-                  mr="2"
+                  ml="2"
                   color="muted.400"
                 />
-              </Pressable>
-            }
-            placeholder="Password"
-          />
-        </Stack>
-      </Center>
-      <Center flex={0.2} justifyContent="flex-start">
-        <Button
-          w="90%"
-          colorScheme="secondary"
-          onPress={loginConnect}
-          isLoading={loading}
-          isLoadingText="Submitting">
-          Submit
-        </Button>
-      </Center>
-    </KeyboardAvoidingView>
+              }
+              placeholder="Login"
+            />
+            <Input
+              w={{
+                base: '90%',
+                md: '25%',
+              }}
+              h="40px"
+              bg="white"
+              borderRadius="lg"
+              borderColor={err ? 'red.400' : null}
+              type={show ? 'text' : 'password'}
+              value={password}
+              onChangeText={text => setPassword(text)}
+              InputRightElement={
+                <Pressable onPress={() => setShow(!show)}>
+                  <Icon
+                    as={
+                      <MaterialIcons
+                        name={show ? 'visibility' : 'visibility-off'}
+                      />
+                    }
+                    size={5}
+                    mr="2"
+                    color="muted.400"
+                  />
+                </Pressable>
+              }
+              placeholder="Password"
+            />
+          </Stack>
+        </Center>
+        <Center flex={0.2} borderWidth={1} justifyContent="center">
+          <Button
+            w="90%"
+            colorScheme="secondary"
+            onPress={loginConnect}
+            isLoading={loading}
+            isLoadingText="Submitting">
+            Submit
+          </Button>
+        </Center>
+      </Box>
+    </KeyboardAwareScrollView>
   );
 };
