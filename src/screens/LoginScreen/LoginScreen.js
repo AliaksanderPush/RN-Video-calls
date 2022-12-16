@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {Platform} from 'react-native';
+import {Platform, useWindowDimensions} from 'react-native';
 import {AlertCustom} from '../../components';
 import {Voximplant} from 'react-native-voximplant';
 import {logo, errMessage} from '../../constants';
@@ -15,7 +15,6 @@ import {
   Input,
   Pressable,
   Icon,
-  KeyboardAvoidingView,
   Button,
   Image,
   useSafeArea,
@@ -28,6 +27,7 @@ export const LoginScreen = ({navigation}) => {
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const {height} = useWindowDimensions();
 
   const voximplant = Voximplant.getInstance();
 
@@ -92,16 +92,15 @@ export const LoginScreen = ({navigation}) => {
 
   const safeAreaProps = useSafeArea({
     safeAreaTop: true,
-    pt: 2,
+    pt: Platform.OS === 'android' ? 0 : 2,
   });
 
   return (
-    <KeyboardAwareScrollView>
-      <Box {...safeAreaProps} borderWidth={1} flex={1} bg="gray.200">
-        <Center flex={0.55} borderWidth={1}>
+    <KeyboardAwareScrollView style={{flex: 1}}>
+      <Box {...safeAreaProps} w="100%" h={height} bg="gray.200">
+        <Center flex={0.55}>
           <Image
-            borderBottomRightRadius="lg"
-            borderBottomLeftRadius="lg"
+            borderBottomRadius="lg"
             w="100%"
             h="280"
             source={{
@@ -110,7 +109,7 @@ export const LoginScreen = ({navigation}) => {
             alt={'Alternate Text '}
             resizeMode="cover"
           />
-          <Heading mt={3} size="lg">
+          <Heading mt={5} size="lg">
             Hello Again!
           </Heading>
           {!message ? (
@@ -134,7 +133,7 @@ export const LoginScreen = ({navigation}) => {
             </Box>
           )}
         </Center>
-        <Center flex={0.25} borderWidth={1}>
+        <Center flex={0.25}>
           <Stack space={4} w="100%" alignItems="center">
             <Input
               w={{
@@ -187,9 +186,10 @@ export const LoginScreen = ({navigation}) => {
             />
           </Stack>
         </Center>
-        <Center flex={0.2} borderWidth={1} justifyContent="center">
+        <Center flex={0.2} justifyContent="center">
           <Button
             w="90%"
+            borderRadius="lg"
             colorScheme="secondary"
             onPress={loginConnect}
             isLoading={loading}

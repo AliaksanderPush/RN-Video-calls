@@ -1,16 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Center,
-  Box,
-  Heading,
-  Image,
-  Select,
-  CheckIcon,
-  Button,
-  useSafeArea,
-  HStack,
-  VStack,
-} from 'native-base';
 import {mainImg, users} from '../../constants';
 import {Alert} from 'react-native';
 import {GoBack, ButtonCall} from '../../components';
@@ -18,6 +6,17 @@ import {Voximplant} from 'react-native-voximplant';
 import {errMessage} from '../../constants';
 import {checkPermissions} from '../../helper';
 import calls from '../../store';
+import {
+  Center,
+  Box,
+  Heading,
+  Image,
+  Select,
+  CheckIcon,
+  useSafeArea,
+  HStack,
+  VStack,
+} from 'native-base';
 
 export const MainScreen = ({navigation}) => {
   const [service, setService] = useState('');
@@ -56,16 +55,20 @@ export const MainScreen = ({navigation}) => {
   const handleMicrophone = () => {
     setMicrophone(!microPhone);
   };
+  const conditionsColors = elem => {
+    return elem ? 'gray.500' : 'gray.300';
+  };
 
   useEffect(() => {
-    voximplant.on(Voximplant.ClientEvents.IncomingCall, incomingCallEvent => {
+    const incomingClient = Voximplant.ClientEvents.IncomingCall;
+    voximplant.on(incomingClient, incomingCallEvent => {
       calls.set(incomingCallEvent.call.callId, incomingCallEvent.call);
       navigation.navigate('IncomingCall', {
         callId: incomingCallEvent.call.callId,
       });
     });
     return () => {
-      voximplant.off(Voximplant.ClientEvents.IncomingCall);
+      voximplant.off(incomingClient);
     };
   }, []);
 
@@ -100,8 +103,7 @@ export const MainScreen = ({navigation}) => {
             shadow={3}
             selectedValue={service}
             minWidth="90%"
-            accessibilityLabel="Choose Service"
-            placeholder="Choose Service"
+            placeholder="Choose contact number"
             _selectedItem={{
               bg: 'secondary.500',
               endIcon: <CheckIcon size="5" />,
@@ -126,7 +128,7 @@ export const MainScreen = ({navigation}) => {
             iconName="phone"
             bg="green.500"
             color="white"
-            size={100}
+            size={75}
             disable={!service ? true : false}
             onHandler={handlemakeCall}
           />
@@ -134,25 +136,22 @@ export const MainScreen = ({navigation}) => {
             <ButtonCall
               typeName="FontAwesome"
               iconName={!sound ? 'volume-off' : 'volume-up'}
-              bg={!sound ? 'gray.300' : 'gray.500'}
+              bg={conditionsColors(sound)}
               color={'white'}
-              size={70}
               onHandler={handleSound}
             />
             <ButtonCall
               typeName="FontAwesome5"
               iconName={video ? 'video' : 'video-slash'}
-              bg={video ? 'gray.500' : 'gray.300'}
+              bg={conditionsColors(video)}
               color={'white'}
-              size={70}
               onHandler={handleVideo}
             />
             <ButtonCall
               typeName="FontAwesome"
               iconName={microPhone ? 'microphone' : 'microphone-slash'}
-              bg={microPhone ? 'gray.500' : 'gray.300'}
+              bg={conditionsColors(microPhone)}
               color={'white'}
-              size={70}
               onHandler={handleMicrophone}
             />
           </HStack>

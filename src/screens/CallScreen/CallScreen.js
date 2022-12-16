@@ -8,11 +8,11 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import calls from '../../store';
 
 export const CallScreen = ({route, navigation}) => {
-  //const {isVideoCall, callee, isIncomingCall} = route?.params;
+  const {isVideoCall, callee, isIncomingCall} = route?.params;
   const [callState, setCallState] = useState('Connecting...');
   const [localVideoStreamId, setLocalVideoStreamId] = useState('');
   const [remoteVideoStreamId, setRemoteVideoStreamId] = useState('');
-  /*
+
   const voximplant = Voximplant.getInstance();
   const callId = useRef(route?.params.callId);
 
@@ -64,23 +64,31 @@ export const CallScreen = ({route, navigation}) => {
     }
 
     function subscribeToCallEvents() {
-      call.on(Voximplant.CallEvents.Connected, callEvent => {
+      const voxIvent = Voximplant.CallEvents;
+      const {
+        Connected,
+        Disconnected,
+        ProgressToneStart,
+        LocalVideoStreamAdded,
+        EndpointAdded,
+      } = voxIvent;
+      call.on(Connected, callEvent => {
         setCallState('Call connected');
       });
-      call.on(Voximplant.CallEvents.Disconnected, callEvent => {
+      call.on(Disconnected, callEvent => {
         calls.delete(callEvent.call.callId);
         navigation.navigate('Main');
       });
-      call.on(Voximplant.CallEvents.Failed, callEvent => {
+      call.on(Failed, callEvent => {
         showCallError(callEvent.reason);
       });
-      call.on(Voximplant.CallEvents.ProgressToneStart, callEvent => {
+      call.on(ProgressToneStart, callEvent => {
         setCallState('Ringing...');
       });
-      call.on(Voximplant.CallEvents.LocalVideoStreamAdded, callEvent => {
+      call.on(LocalVideoStreamAdded, callEvent => {
         setLocalVideoStreamId(callEvent.videoStream.id);
       });
-      call.on(Voximplant.CallEvents.EndpointAdded, callEvent => {
+      call.on(EndpointAdded, callEvent => {
         endpoint = callEvent.endpoint;
         subscribeToEndpointEvents();
       });
@@ -104,7 +112,7 @@ export const CallScreen = ({route, navigation}) => {
       call.off(Voximplant.CallEvents.EndpointAdded);
     };
   }, []);
-*/
+
   const safeAreaProps = useSafeArea({
     safeAreaTop: true,
     pt: 2,

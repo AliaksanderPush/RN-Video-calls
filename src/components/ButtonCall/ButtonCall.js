@@ -8,16 +8,16 @@ export const ButtonCall = ({
   color,
   bg,
   onHandler,
-  size = 70,
+  size = 60,
   typeName,
   disable = false,
 }) => {
   const handleTypeName = (typeName, iconName, color) => {
     switch (typeName) {
       case 'FontAwesome5':
-        return <FontAwesome5Icon name={iconName} color={color} size={40} />;
+        return <FontAwesome5Icon name={iconName} color={color} size={32} />;
       case 'FontAwesome':
-        return <FontAwesome name={iconName} color={color} size={40} />;
+        return <FontAwesome name={iconName} color={color} size={32} />;
 
       default:
         setMessage(errMessage.unknown);

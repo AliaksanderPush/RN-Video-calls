@@ -5,8 +5,6 @@ import {useNavigation} from '@react-navigation/core';
 
 export const GoBack = () => {
   const navigation = useNavigation();
-
-  console.log('navi=>', navigation);
   return (
     <Pressable
       position="absolute"

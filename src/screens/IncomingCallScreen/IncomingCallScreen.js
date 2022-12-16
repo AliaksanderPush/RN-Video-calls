@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Voximplant} from 'react-native-voximplant';
+import {errMessage} from '../../constants';
+import {GoBack} from '../../components';
+import Feather from 'react-native-vector-icons/Feather';
+import {Alert} from 'react-native';
+import {checkPermissions} from '../../helper';
+import calls from '../../store';
 import {
   useSafeArea,
   Box,
@@ -9,12 +15,6 @@ import {
   HStack,
   VStack,
 } from 'native-base';
-import {errMessage} from '../../constants';
-import {GoBack} from '../../components';
-import Feather from 'react-native-vector-icons/Feather';
-import {Alert} from 'react-native';
-import {checkPermissions} from '../../helper';
-import calls from '../../store';
 
 export const IncomingCallScreen = ({route, navigation}) => {
   const {callId} = route.params;
@@ -37,7 +37,7 @@ export const IncomingCallScreen = ({route, navigation}) => {
     }
   }
 
-  async function declineCall() {
+  function declineCall() {
     let call = calls.get(callId);
     call.decline();
   }
