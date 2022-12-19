@@ -14,6 +14,7 @@ import {
   Pressable,
   HStack,
   VStack,
+  Image,
 } from 'native-base';
 
 export const IncomingCallScreen = ({route, navigation}) => {
@@ -61,8 +62,20 @@ export const IncomingCallScreen = ({route, navigation}) => {
 
   return (
     <Box flex={1} {...safeAreaProps}>
-      <Box h="75%" position="relative" w="100%">
+      <Box
+        h="75%"
+        position="relative"
+        w="100%"
+        alignItems="center"
+        justifyContent="center">
         <GoBack />
+        <Image
+          w="70%"
+          h="280"
+          source={require('../../../assets/2.png')}
+          alt={'Alternate Text '}
+          resizeMode="cover"
+        />
       </Box>
       <Center>
         <Text pb={5}>{caller}</Text>

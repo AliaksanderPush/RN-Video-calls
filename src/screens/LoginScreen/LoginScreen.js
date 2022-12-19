@@ -3,7 +3,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Platform, useWindowDimensions} from 'react-native';
 import {AlertCustom} from '../../components';
 import {Voximplant} from 'react-native-voximplant';
-import {logo, errMessage} from '../../constants';
+import {errMessage} from '../../constants';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {VOXIMPLANT_APP, VOXIMPLANT_ACCOUNT} from '../../constants';
 import {
@@ -103,9 +103,7 @@ export const LoginScreen = ({navigation}) => {
             borderBottomRadius="lg"
             w="100%"
             h="280"
-            source={{
-              uri: `${logo}`,
-            }}
+            source={require('../../../assets/11.png')}
             alt={'Alternate Text '}
             resizeMode="cover"
           />

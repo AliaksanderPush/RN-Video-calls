@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {mainImg, users} from '../../constants';
+import {users} from '../../constants';
 import {Alert} from 'react-native';
 import {GoBack, ButtonCall} from '../../components';
 import {Voximplant} from 'react-native-voximplant';
@@ -27,6 +27,7 @@ export const MainScreen = ({navigation}) => {
   const voximplant = Voximplant.getInstance();
 
   const handlemakeCall = () => {
+    console.log('call=>', video);
     handleCall(video);
   };
 
@@ -89,9 +90,7 @@ export const MainScreen = ({navigation}) => {
           w="70%"
           h="280"
           borderRadius="lg"
-          source={{
-            uri: `${mainImg}`,
-          }}
+          source={require('../../../assets/3.png')}
           alt={'Alternate Text '}
           resizeMode="cover"
         />

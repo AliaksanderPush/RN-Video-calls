@@ -12,7 +12,7 @@ export const CallScreen = ({route, navigation}) => {
   const [callState, setCallState] = useState('Connecting...');
   const [localVideoStreamId, setLocalVideoStreamId] = useState('');
   const [remoteVideoStreamId, setRemoteVideoStreamId] = useState('');
-
+  console.log('video=>', route?.params);
   const voximplant = Voximplant.getInstance();
   const callId = useRef(route?.params.callId);
 
@@ -64,31 +64,24 @@ export const CallScreen = ({route, navigation}) => {
     }
 
     function subscribeToCallEvents() {
-      const voxIvent = Voximplant.CallEvents;
-      const {
-        Connected,
-        Disconnected,
-        ProgressToneStart,
-        LocalVideoStreamAdded,
-        EndpointAdded,
-      } = voxIvent;
-      call.on(Connected, callEvent => {
+      call.on(Voximplant.CallEvents.Connected, callEvent => {
         setCallState('Call connected');
       });
-      call.on(Disconnected, callEvent => {
+      call.on(Voximplant.CallEvents.Disconnected, callEvent => {
         calls.delete(callEvent.call.callId);
         navigation.navigate('Main');
       });
-      call.on(Failed, callEvent => {
+      call.on(Voximplant.CallEvents.Failed, callEvent => {
         showCallError(callEvent.reason);
       });
-      call.on(ProgressToneStart, callEvent => {
+      call.on(Voximplant.CallEvents.ProgressToneStart, callEvent => {
         setCallState('Ringing...');
       });
-      call.on(LocalVideoStreamAdded, callEvent => {
+      call.on(Voximplant.CallEvents.LocalVideoStreamAdded, callEvent => {
         setLocalVideoStreamId(callEvent.videoStream.id);
       });
-      call.on(EndpointAdded, callEvent => {
+      call.on(Voximplant.CallEvents.EndpointAdded, callEvent => {
+        console.log('endpoint added');
         endpoint = callEvent.endpoint;
         subscribeToEndpointEvents();
       });
